@@ -10,6 +10,7 @@ pkg/
 *.dylib
 *.a
 
+
 # Test binary, built with `go test -c`
 *.test
 
@@ -21,6 +22,7 @@ pkg/
 
 # IdeaIDE
 .idea
+*.iml
 
 # VS Code
 .vscode

@@ -23,7 +23,7 @@ import (
 	"io"
 )
 
-// gaiad custom flags
+// oind custom flags
 const flagInvCheckPeriod = "inv-check-period"
 
 var invCheckPeriod uint
