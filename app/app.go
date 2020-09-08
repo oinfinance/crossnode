@@ -18,6 +18,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+	"github.com/oinfinance/crossnode/x/mapping"
+	mapkeep "github.com/oinfinance/crossnode/x/mapping/keeper"
+	maptype "github.com/oinfinance/crossnode/x/mapping/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
@@ -48,6 +51,7 @@ var (
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
+		mapping.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -92,6 +96,7 @@ type OinApp struct {
 	paramsKeeper   params.Keeper
 	mintKeeper     mint.Keeper
 	crisisKeeper   crisis.Keeper
+	mappingKeeper  mapkeep.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -111,7 +116,7 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 
 	// create
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
-		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey)
+		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, maptype.StoreKey)
 
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -132,6 +137,7 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
 	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
+	//mappingSubspace := app.paramsKeeper.Subspace(maptype.DefaultParamspace)
 
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper, bankSubspace, bank.DefaultCodespace, app.ModuleAccountAddrs())
@@ -147,7 +153,7 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		app.cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace, slashing.DefaultCodespace,
 	)
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
-
+	app.mappingKeeper = mapkeep.NewKeeper(app.cdc, keys[maptype.StoreKey])
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(
@@ -167,6 +173,7 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		mint.NewAppModule(app.mintKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper),
+		mapping.NewAppModule(app.mappingKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
