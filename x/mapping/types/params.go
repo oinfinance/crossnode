@@ -9,12 +9,12 @@ const (
 
 var (
 	// key for constant fee parameter
-	ParamStoreKeyTokenCount = []byte("TokenTypeCount")
+	RefreshPoint = []byte("RefreshPoint")
 )
 
 // type declaration for parameters
 func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable(
-		ParamStoreKeyTokenCount, int32(0),
+		RefreshPoint, int64(150),
 	)
 }

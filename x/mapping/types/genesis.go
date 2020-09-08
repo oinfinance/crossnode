@@ -31,8 +31,8 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data GenesisState) {
 func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) GenesisState {
 	var maplist []MappingInfo
 	l := keeper.GetAllMapInfo(ctx)
-	for _, i := range l {
-		maplist = append(maplist, i)
+	for _, info := range l {
+		maplist = append(maplist, *info)
 	}
 	return NewGenesisState(maplist)
 }
