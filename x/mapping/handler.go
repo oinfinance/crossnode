@@ -25,36 +25,17 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 
 func handleMsgRegister(ctx sdk.Context, k keeper.Keeper, msg *types.MsgRegister) sdk.Result {
 	if err := msg.ValidateBasic(); err != nil {
-		return &sdk.Result{Log: err.Error()}, err
+		return sdk.NewError(types.DefaultCodespace, types.CodeInvalidInput, "validate basic failed").Result()
 	}
-
-	// parse the chainID from a string to a base-10 integer
-	intChainID, ok := new(big.Int).SetString(ctx.ChainID(), 10)
-	if !ok {
-		return nil, greeter.ErrInvalidChainID(fmt.Sprintf("invalid chainID: %s", ctx.ChainID()))
+	info := types.MappingInfo{}
+	info.RemoteAddr = msg.RemoteAccount
+	info.ChainId = msg.ChainId
+	info.TokenType = msg.TokenType
+	info.MyAddress = msg.MyAddress
+	info.Balance = big.NewInt(0)
+	err := k.AddMapping(ctx, &info)
+	if err != nil {
+		return sdk.NewError(types.DefaultCodespace, types.CodeInvalidInput, "has been mapped").Result()
 	}
-
-	st := evm.StateTransition{
-		Sender:       ethcmn.BytesToAddress(msg.From.Bytes()),
-		AccountNonce: msg.AccountNonce,
-		Price:        msg.Price.BigInt(),
-		GasLimit:     msg.GasLimit,
-		Amount:       msg.Amount.BigInt(),
-		Payload:      msg.Payload,
-		Csdb:         k.CommitStateDB.WithContext(ctx),
-		ChainID:      intChainID,
-		Simulate:     ctx.IsCheckTx(),
-	}
-
-	if msg.Recipient != nil {
-		to := ethcmn.BytesToAddress(msg.Recipient.Bytes())
-		st.Recipient = &to
-	}
-
-	// Prepare db for logs
-	k.CommitStateDB.Prepare(ethcmn.Hash{}, ethcmn.Hash{}, k.TxCount.Get()) // Cannot provide tx hash
-	k.TxCount.Increment()
-
-	_, res := st.TransitionCSDB(ctx, false, greeter.DenomDefault)
-	return &res, nil
+	return sdk.Result{}
 }
