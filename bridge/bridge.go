@@ -22,7 +22,7 @@ type Bridge interface {
 func NewBridge(chainId uint) Bridge {
 	switch chainId {
 	case 0x01:
-		return &ethereum.EthBridge{}
+		return ethereum.NewEthBridge()
 	case 0x02:
 		return &ontology.OntBridge{}
 	}
