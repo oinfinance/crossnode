@@ -19,7 +19,7 @@ func NewEthBridge() bridge.Bridge {
 }
 
 func (e *EthBridge) GetBalance(addr bridge.Address) *big.Int {
-	balance, _ := e.cluster.GetBalance("", hex.EncodeToString(addr))
+	balance, _ := e.cluster.GetBalance("", addr[:])
 	return balance
 
 }
