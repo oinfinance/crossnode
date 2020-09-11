@@ -19,11 +19,31 @@ type Bridge interface {
 	BatchTransfer(from Address, to []Address, value []*big.Int) Receipts
 }
 
-func NewBridge(chainId uint) Bridge {
-	switch chainId {
-	case 0x01:
+func NewBridge(chainid uint) Bridge {
+	switch ChainId(chainid) {
+	case ChainEth:
 		return ethereum.NewEthBridge()
-	case 0x02:
+	case ChainONT:
 		return &ontology.OntBridge{}
 	}
+	return nil
+}
+
+func SupportedByName(chain string, token string) bool {
+	chainId,exChain := SupportChainId[chain]
+	if !exChain {
+		return false
+	}
+	tid, extoken := SupportTokenId[token]
+	if !extoken {
+		return false
+	}
+
+	tokenlist := SupportList[chainId]
+	for _,info := range tokenlist {
+		if info.id == tid {
+			return true
+		}
+	}
+	return false
 }

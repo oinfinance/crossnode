@@ -1,6 +1,9 @@
 package types
 
-import "math/big"
+import (
+	"encoding/json"
+	"math/big"
+)
 
 type MappingInfo struct {
 	RemoteAddr []byte
@@ -17,4 +20,9 @@ type QueryInfoResponse struct {
 	TokenType  uint   `json:"tokenType"`
 	MyAddress  []byte `json:"myAddress"`
 	Balance    string `json:"balance"'`
+}
+
+func (q QueryInfoResponse)String() string{
+	d,_ := json.Marshal(q)
+	return string(d)
 }
