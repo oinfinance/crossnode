@@ -179,7 +179,7 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
-	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName)
+	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName, maptype.ModuleName)
 
 	app.mm.SetOrderEndBlockers(crisis.ModuleName, staking.ModuleName)
 

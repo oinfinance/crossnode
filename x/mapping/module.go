@@ -38,17 +38,17 @@ func (ab AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 
 // default genesis state
 func (ab AppModuleBasic) DefaultGenesis() json.RawMessage {
-	return types.ModuleCdc.MustMarshalJSON(types.DefaultGenesisState())
+	return types.ModuleCdc.MustMarshalJSON(DefaultGenesisState())
 }
 
 // module validate genesis
 func (ab AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
-	var data types.GenesisState
+	var data GenesisState
 	if err := types.ModuleCdc.UnmarshalJSON(bz, &data); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %s", types.ModuleName, err)
 	}
 
-	return types.ValidateGenesis(data)
+	return ValidateGenesis(data)
 }
 
 // register rest routes
@@ -109,7 +109,7 @@ func (am AppModule) NewQuerierHandler() sdk.Querier {
 
 // module init-genesis
 func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
-	var genesisState types.GenesisState
+	var genesisState GenesisState
 	types.ModuleCdc.MustUnmarshalJSON(data, &genesisState)
 	// Todo: call InitGenesis
 	return []abci.ValidatorUpdate{}
@@ -117,7 +117,7 @@ func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.Va
 
 // module export genesis
 func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
-	gs := types.ExportGenesis(ctx, am.MapKeeper)
+	gs := ExportGenesis(ctx, am.MapKeeper)
 	return types.ModuleCdc.MustMarshalJSON(gs)
 }
 

@@ -2,7 +2,7 @@ package ethereum
 
 import (
 	"encoding/hex"
-	"github.com/oinfinance/crossnode/bridge"
+	"github.com/oinfinance/crossnode/bridge/types"
 	"math/big"
 )
 
@@ -14,24 +14,24 @@ type EthBridge struct {
 	cluster *EthCluster
 }
 
-func NewEthBridge() bridge.Bridge {
+func NewEthBridge() *EthBridge {
 	return &EthBridge{NewClientCluster([]string{rpcaddr})}
 }
 
-func (e *EthBridge) GetBalance(addr bridge.Address) *big.Int {
+func (e *EthBridge) GetBalance(addr types.Address) *big.Int {
 	balance, _ := e.cluster.GetBalance("", addr[:])
 	return balance
 
 }
 
-func (e *EthBridge) Transfer(from, to bridge.Address, value *big.Int) bridge.Receipt {
+func (e *EthBridge) Transfer(from, to types.Address, value *big.Int) types.Receipt {
 	txhash, err := e.cluster.SendTransaction("", hex.EncodeToString(from), hex.EncodeToString(to), value)
 	if err != nil {
-		return bridge.Receipt{}
+		return types.Receipt{}
 	}
-	return bridge.Receipt(txhash)
+	return types.Receipt(txhash)
 }
 
-func (e *EthBridge) BatchTransfer(from bridge.Address, to []bridge.Address, value []*big.Int) bridge.Receipts {
+func (e *EthBridge) BatchTransfer(from types.Address, to []types.Address, value []*big.Int) types.Receipts {
 	return nil
 }

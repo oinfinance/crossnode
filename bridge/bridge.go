@@ -3,20 +3,18 @@ package bridge
 import (
 	"github.com/oinfinance/crossnode/bridge/ethereum"
 	"github.com/oinfinance/crossnode/bridge/ontology"
+	"github.com/oinfinance/crossnode/bridge/types"
 	"math/big"
 )
 
-type Address []byte
-type Receipt []byte
-type Receipts []Receipt
 
 /*
  * Bridge define the interface that could query account's assert and do a transfer.
  */
 type Bridge interface {
-	GetBalance(account Address) *big.Int
-	Transfer(from, to Address, value *big.Int) Receipt
-	BatchTransfer(from Address, to []Address, value []*big.Int) Receipts
+	GetBalance(account types.Address) *big.Int
+	Transfer(from, to types.Address, value *big.Int) types.Receipt
+	BatchTransfer(from types.Address, to []types.Address, value []*big.Int) types.Receipts
 }
 
 func NewBridge(chainid uint) Bridge {
