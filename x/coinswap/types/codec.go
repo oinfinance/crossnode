@@ -13,5 +13,6 @@ func init() {
 
 // RegisterCodec registers concrete types and interfaces on the given codec.
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(&MsgRegister{}, "coinswap/MsgRegister", nil)
+	cdc.RegisterConcrete(&MsgBurning{}, "coinswap/MsgBurning", nil)
+	cdc.RegisterConcrete(&MsgDeposit{}, "coinswap/MsgDeposit", nil)
 }

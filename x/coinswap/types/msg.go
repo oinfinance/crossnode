@@ -1,19 +1,18 @@
 package types
 
 // All coinswap message define.
-
-type MsgRegister struct {
-	SourceAccount []byte `json:"account"`   // source chain account
-	ChainId       uint   `json:"chainId"`   // chain identification
-	TokenType     uint   `json:"token"`     // token type identification
-	MyAddress     []byte `json:"myAddress"` // binding address with local address
+// deposit msg
+type MsgDeposit struct {
+	Chain   uint	`json:"chain"`
+	Token	uint	`json:"token"`
+	Amount  []byte 	`json:"amount"`
+	TargetChain uint `json:"target"`
 }
 
-func NewMsgRegister(sourceAccount []byte, chainid uint, tokenType uint, myAddress []byte) *MsgRegister {
-	return &MsgRegister{
-		SourceAccount: sourceAccount,
-		ChainId:       chainid,
-		TokenType:     tokenType,
-		MyAddress:     myAddress,
-	}
+type MsgBurning struct {
+	Chain   uint	`json:"chain"`
+	Token	uint	`json:"token"`
+	Amount  []byte 	`json:"amount"`
+	TargetChain uint `json:"target"`
 }
+
