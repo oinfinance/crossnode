@@ -35,15 +35,15 @@ all: install
 
 build: go.sum
 	mkdir -p $(BUILDDIR)
-	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/oind
-	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/oincli
+	go build  $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/oind
+	go build  $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/oincli
 
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
 install: go.sum
-		go install -mod=readonly $(BUILD_FLAGS) ./cmd/oind
-		go install -mod=readonly $(BUILD_FLAGS) ./cmd/oincli
+		go install  $(BUILD_FLAGS) ./cmd/oind
+		go install  $(BUILD_FLAGS) ./cmd/oincli
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
 	@go mod download
