@@ -13,14 +13,76 @@ var (
 
 	_ sdk.Msg = MsgBurning{}
 	_ sdk.Tx  = MsgBurning{}
+
+	_ sdk.Msg = MsgMint{}
+	_ sdk.Tx  = MsgMint{}
 )
 
 const (
 	TypeMsgDeposit = "deposit"
 	TypeMsgBurning = "burning"
+	TypeMsgMint    = "mint"
 )
 
 // All coinswap message define.
+
+// mint msg
+type MsgMint struct {
+	Chain       uint   `json:"chain"`
+	Token       uint   `json:"token"`
+	Amount      []byte `json:"amount"`
+	TargetChain uint   `json:"target"`
+}
+
+func NewMsgMint(chainid uint, tokenType uint, amount *big.Int, targetChain uint) *MsgMint {
+	return &MsgMint{
+		Chain:       chainid,
+		Token:       tokenType,
+		Amount:      amount.Bytes(),
+		TargetChain: targetChain,
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgMint) Route() string { return RouterKey }
+
+// Type should return the action
+func (msg MsgMint) Type() string { return TypeMsgMint }
+
+// GetMsgs returns a single MsgSetAccName as an sdk.Msg.
+func (msg MsgMint) GetMsgs() []sdk.Msg {
+	return []sdk.Msg{msg}
+}
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgMint) ValidateBasic() sdk.Error {
+	if msg.Chain < 0 {
+		return sdk.NewError(DefaultCodespace, CodeInvalidInput, "invalid chainId")
+	}
+	if msg.Token < 0 {
+		return sdk.NewError(DefaultCodespace, CodeInvalidInput, "invalid tokenType")
+	}
+
+	if msg.TargetChain < 0 {
+		return sdk.NewError(DefaultCodespace, CodeInvalidInput, "invalid target chainId")
+	}
+	if big.NewInt(0).SetBytes(msg.Amount).Int64() < 0 {
+		return sdk.NewError(DefaultCodespace, CodeInvalidInput, "negative amount")
+	}
+
+	return nil
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgMint) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgMint) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{}
+}
+
 // deposit msg
 type MsgDeposit struct {
 	Chain       uint   `json:"chain"`
