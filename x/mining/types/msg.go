@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// All mapping message define。
+// All mining message define。
 var (
 	// type check
 	_ sdk.Msg = MsgWithDraw{}

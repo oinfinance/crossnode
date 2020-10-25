@@ -2,40 +2,32 @@ package mining
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/oinfinance/crossnode/x/mapping/keeper"
-	"github.com/oinfinance/crossnode/x/mapping/types"
+	"github.com/oinfinance/crossnode/x/mining/keeper"
 )
 
 // GenesisState is the mapping state that must be provided at genesis.
 type GenesisState struct {
-	MapList []types.MappingInfo `json:"maplist" yaml:"maplist"`
+
 }
 
 // NewGenesisState creates a new genesis state.
-func NewGenesisState(maplist []types.MappingInfo) GenesisState {
-	return GenesisState{MapList: maplist}
+func NewGenesisState() GenesisState {
+	return GenesisState{}
 }
 
 // DefaultGenesisState returns a default genesis state
 func DefaultGenesisState() GenesisState {
-	return NewGenesisState(nil)
+	return NewGenesisState()
 }
 
 // InitGenesis sets distribution information for genesis.
 func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data GenesisState) {
-	for _, info := range data.MapList {
-		keeper.AddMapping(ctx, &info)
-	}
+	return
 }
 
 // ExportGenesis returns a GenesisState for a given context and keeper.
 func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) GenesisState {
-	var maplist []types.MappingInfo
-	l := keeper.GetAllMapInfo(ctx)
-	for _, info := range l {
-		maplist = append(maplist, *info)
-	}
-	return NewGenesisState(maplist)
+	return NewGenesisState()
 }
 
 // ValidateGenesis performs basic validation of mapping genesis data returning an

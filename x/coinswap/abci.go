@@ -1,9 +1,9 @@
-package mapping
+package coinswap
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/oinfinance/crossnode/bridge"
-	"github.com/oinfinance/crossnode/x/mapping/keeper"
+	//"github.com/oinfinance/crossnode/bridge"
+	"github.com/oinfinance/crossnode/x/coinswap/keeper"
 )
 
 var (
@@ -16,13 +16,13 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		return
 	}
 
-	maplist := k.GetAllMapInfo(ctx)
-	for _, info := range maplist {
-		gate := bridge.NewBridge(info.ChainId)
-		newBalance := gate.GetBalance(info.RemoteAddr)
-		if newBalance.Cmp(info.Balance) != 0 {
-			info.Balance = newBalance
-			k.UpdateMapping(ctx, info)
-		}
-	}
+	//maplist := k.GetAllMapInfo(ctx)
+	//for _, info := range maplist {
+	//	gate := bridge.NewBridge(info.ChainId)
+	//	newBalance := gate.GetBalance(info.RemoteAddr)
+	//	if newBalance.Cmp(info.Balance) != 0 {
+	//		info.Balance = newBalance
+	//		k.UpdateMapping(ctx, info)
+	//	}
+	//}
 }
