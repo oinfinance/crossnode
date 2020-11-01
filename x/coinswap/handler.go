@@ -13,8 +13,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgMint:
-			return handleMsgMint(ctx, k, msg)
+		case *types.MsgCoinSwap:
+			return handleMsgCoinSwap(ctx, k, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized mapping message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -22,11 +22,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 	}
 }
 
-func handleMsgMint(ctx sdk.Context, k keeper.Keeper, msg *types.MsgMint) sdk.Result {
+func handleMsgCoinSwap(ctx sdk.Context, k keeper.Keeper, msg *types.MsgCoinSwap) sdk.Result {
 	if err := msg.ValidateBasic(); err != nil {
 		return sdk.NewError(types.DefaultCodespace, types.CodeInvalidInput, "validate basic failed").Result()
 	}
-
 	return sdk.Result{}
 }
-
