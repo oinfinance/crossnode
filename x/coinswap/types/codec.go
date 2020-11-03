@@ -15,4 +15,5 @@ func init() {
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(&MsgBurning{}, "coinswap/MsgBurning", nil)
 	cdc.RegisterConcrete(&MsgDeposit{}, "coinswap/MsgDeposit", nil)
+	cdc.RegisterConcrete(&MsgCoinSwap{}, "coinswap/MsgCoinSwap", nil)
 }

@@ -249,3 +249,15 @@ func (msg MsgCoinSwap) GetSignBytes() []byte {
 func (msg MsgCoinSwap) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{}
 }
+
+func (msg MsgCoinSwap) ToRecord() CoinSwapRecord {
+	return CoinSwapRecord{
+		TxHash:    msg.TxHash,
+		FromChain: msg.FromChain,
+		FromAddr:  msg.FromAddr,
+		Token:     msg.Token,
+		Value:     msg.Value,
+		ToAddr:    msg.ToAddr,
+		ToChain:   msg.ToChain,
+	}
+}

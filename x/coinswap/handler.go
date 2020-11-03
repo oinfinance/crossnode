@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/oinfinance/crossnode/x/coinswap/keeper"
 	"github.com/oinfinance/crossnode/x/coinswap/types"
+	"math/big"
 )
 
 // NewHandler returns a handler for "greeter" type messages.
@@ -26,5 +27,17 @@ func handleMsgCoinSwap(ctx sdk.Context, k keeper.Keeper, msg *types.MsgCoinSwap)
 	if err := msg.ValidateBasic(); err != nil {
 		return sdk.NewError(types.DefaultCodespace, types.CodeInvalidInput, "validate basic failed").Result()
 	}
-	return sdk.Result{}
+	record := msg.ToRecord()
+	record.AddedBlock = big.NewInt(ctx.BlockHeight())
+	hash := record.Hash()
+
+	if k.HasRecord(ctx, hash) {
+		return sdk.NewError(types.DefaultCodespace, types.CodeInvalidInput, "already existed").Result()
+	}
+
+	if e := k.AddRecord(ctx, hash, &record); e != nil {
+		return sdk.NewError(types.DefaultCodespace, types.CodeInvalidInput, "add error %s", e.Error()).Result()
+	}
+
+	return sdk.Result{Data: hash}
 }

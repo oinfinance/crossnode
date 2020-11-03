@@ -1,8 +1,10 @@
 package keeper
 
 import (
+	"errors"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/oinfinance/crossnode/x/coinswap/types"
 )
 
 // Keeper store user info.
@@ -21,4 +23,79 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
 		cdc:      cdc,
 	}
 	return keeper
+}
+
+func (k Keeper) HasRecord(ctx sdk.Context, rhash []byte) bool {
+	store := ctx.KVStore(k.storeKey)
+	return store.Has(rhash)
+}
+
+func (k Keeper) AddRecord(ctx sdk.Context, rhash []byte, r *types.CoinSwapRecord) error {
+	store := ctx.KVStore(k.storeKey)
+	if store.Has(rhash) {
+		return errors.New("the token on the chain has been maped")
+	} else {
+		var rs types.CoinSwapRecordStorage
+		rs.Value = r.Value
+		rs.ToAddr = r.ToAddr
+		rs.ToChain = r.ToChain
+		rs.AddedBlock = r.AddedBlock
+		rs.Token = r.Token
+		rs.FromAddr = r.FromAddr
+		rs.FromChain = r.FromChain
+		rs.TxHash = r.TxHash
+		rs.Status = 1 // wait
+		rs.Receipt = ""
+
+		data, err := k.cdc.MarshalBinaryBare(rs)
+		if err != nil {
+			return err
+		}
+		// save new map info to store.
+		store.Set(rhash, data)
+	}
+	return nil
+}
+
+func (k Keeper) GetRecord(ctx sdk.Context, rhash []byte) *types.CoinSwapRecordStorage {
+	var rs types.CoinSwapRecordStorage
+	store := ctx.KVStore(k.storeKey)
+	if data := store.Get(rhash); data == nil {
+		return nil
+	} else {
+		k.cdc.UnmarshalBinaryBare(data, &rs)
+	}
+
+	return &rs
+}
+
+func (k Keeper) UpdateRecord(ctx sdk.Context, rhash []byte, rs *types.CoinSwapRecordStorage) error {
+	store := ctx.KVStore(k.storeKey)
+	if store.Has(rhash) {
+		data, err := k.cdc.MarshalBinaryBare(rs)
+		if err != nil {
+			return err
+		}
+		// save new map info to store.
+		store.Set(rhash, data)
+	} else {
+		return errors.New("not found map record")
+	}
+	return nil
+}
+
+func (k Keeper) GetAllRecord(ctx sdk.Context) []*types.CoinSwapRecordStorage {
+	var list = make([]*types.CoinSwapRecordStorage, 0)
+
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		var rs types.CoinSwapRecordStorage
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &rs)
+		list = append(list, &rs)
+	}
+
+	return list
 }
