@@ -3,16 +3,16 @@ package coinswap
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/oinfinance/crossnode/x/coinswap/client/cli"
-	"github.com/oinfinance/crossnode/x/coinswap/keeper"
-	"github.com/oinfinance/crossnode/x/coinswap/types"
-	"github.com/oinfinance/crossnode/x/mapping/client/rest"
-	"github.com/spf13/cobra"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/gorilla/mux"
+	"github.com/oinfinance/crossnode/x/coinswap/client/cli"
+	"github.com/oinfinance/crossnode/x/coinswap/client/rest"
+	"github.com/oinfinance/crossnode/x/coinswap/keeper"
+	"github.com/oinfinance/crossnode/x/coinswap/types"
+	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
