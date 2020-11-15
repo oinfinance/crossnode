@@ -5,6 +5,12 @@ import (
 	"math/big"
 )
 
+const (
+	RecordStatusWaited  = 1
+	RecordStatusSucceed = 2
+	RecordStatusFailed  = 3
+)
+
 type CoinSwapRecord struct {
 	TxHash     []byte   `json:"txHash"`     // 抵押交易hash
 	FromChain  int      `json:"fromChain"`  // 原始链

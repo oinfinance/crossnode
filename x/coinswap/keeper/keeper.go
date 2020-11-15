@@ -44,7 +44,7 @@ func (k Keeper) AddRecord(ctx sdk.Context, rhash []byte, r *types.CoinSwapRecord
 		rs.FromAddr = r.FromAddr
 		rs.FromChain = r.FromChain
 		rs.TxHash = r.TxHash
-		rs.Status = 1 // wait
+		rs.Status = types.RecordStatusWaited // wait
 		rs.Receipt = ""
 
 		data, err := k.cdc.MarshalBinaryBare(rs)

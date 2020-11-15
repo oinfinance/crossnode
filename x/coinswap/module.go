@@ -69,14 +69,14 @@ func (ab AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 // app module object
 type AppModule struct {
 	AppModuleBasic
-	MapKeeper keeper.Keeper
+	SwapKeep keeper.Keeper
 }
 
 // NewAppModule creates a new AppModule object
 func NewAppModule(keep keeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
-		MapKeeper:      keep,
+		SwapKeep:       keep,
 	}
 }
 
@@ -93,7 +93,7 @@ func (am AppModule) Route() string { return "" }
 
 // module handler
 func (am AppModule) NewHandler() sdk.Handler {
-	return NewHandler(am.MapKeeper)
+	return NewHandler(am.SwapKeep)
 }
 
 // module querier route name
@@ -103,7 +103,7 @@ func (am AppModule) QuerierRoute() string {
 
 // module querier
 func (am AppModule) NewQuerierHandler() sdk.Querier {
-	return keeper.NewQuerier(am.MapKeeper)
+	return keeper.NewQuerier(am.SwapKeep)
 }
 
 // module init-genesis
@@ -122,6 +122,7 @@ func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 
 // module begin-block
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
+	BeginBlocker(ctx, am.SwapKeep)
 }
 
 // module end-block
