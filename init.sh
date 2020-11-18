@@ -1,6 +1,7 @@
 #!/bin/bash
 
 KEY="mykey"
+PASSWD="12345678"
 CHAINID=8188
 MONIKER="localtestnet"
 
@@ -10,7 +11,7 @@ OIND=oind
 # remove existing daemon and client
 rm -rf ~/.oin*
 
-make install
+#make install
 
 #$CLI config keyring-backend test
 
@@ -21,7 +22,9 @@ $CLI config indent true
 $CLI config trust-node true
 
 # if $KEY exists it should be deleted
-$CLI keys add $KEY
+$CLI keys add $KEY <<EOM
+$PASSWD
+EOM
 
 # Set moniker and chain-id for oind (Moniker can be anything, chain-id must be an integer)
 $OIND init $MONIKER --chain-id $CHAINID
@@ -32,7 +35,9 @@ $OIND add-genesis-account $($CLI keys show $KEY -a) 10000000000000000000000encel
 
 echo "------- after add-genesis-account "
 # Sign genesis transaction
-$OIND gentx --name $KEY #--keyring-backend test
+$OIND gentx --name $KEY <<EOM
+$PASSWD
+EOM
 echo "------- after gentx "
 
 # Collect genesis tx
@@ -48,4 +53,4 @@ echo -e '\nrun the following command in a different terminal/window to run the R
 echo -e "$CLI rest-server --laddr \"tcp://localhost:8545\" --unlock-key $KEY --chain-id $CHAINID --trace\n"
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-$OIND start --pruning=nothing --rpc.unsafe --log_level "main:info,state:info,mempool:info" --trace
+$OIND start --pruning=nothing --rpc.unsafe --log_level "main:info,state:info,mempool:info" --trace > d.log 2>&1 &
