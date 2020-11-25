@@ -36,16 +36,16 @@ func (k Keeper) AddRecord(ctx sdk.Context, rhash []byte, r *types.CoinSwapRecord
 		return errors.New("the token on the chain has been maped")
 	} else {
 		var rs types.CoinSwapRecordStorage
-		rs.Value = r.Value
-		rs.ToAddr = r.ToAddr
-		rs.ToChain = r.ToChain
-		rs.AddedBlock = r.AddedBlock
-		rs.Token = r.Token
-		rs.FromAddr = r.FromAddr
-		rs.FromChain = r.FromChain
-		rs.TxHash = r.TxHash
-		rs.Status = types.RecordStatusWaited // wait
-		rs.Receipt = ""
+		rs.Record.Value = r.Value
+		rs.Record.ToAddr = r.ToAddr
+		rs.Record.ToChain = r.ToChain
+		rs.Record.AddedBlock = r.AddedBlock
+		rs.Record.Token = r.Token
+		rs.Record.FromAddr = r.FromAddr
+		rs.Record.FromChain = r.FromChain
+		rs.Record.TxHash = r.TxHash
+		rs.Receipt.Status = types.RecordStatusWaited // wait
+		rs.Receipt.Receipt = ""
 
 		data, err := k.cdc.MarshalBinaryBare(rs)
 		if err != nil {

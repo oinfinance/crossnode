@@ -27,10 +27,11 @@ type MsgCoinSwap struct {
 	Value     *big.Int `json:"value"`     // 抵押数量
 	ToAddr    []byte   `json:"toAddr"`    // 接收铸币的地址
 	ToChain   int      `json:"toChain"`   // 目标链
+	EventType int      `json:"eventType"` // 事件类型(1: 铸币 0：销毁)
 }
 
 func NewMsgCoinSwap(txhash []byte, fromChain int, fromAddr []byte, token int, value *big.Int,
-	toAddr []byte, toChain int) *MsgCoinSwap {
+	toAddr []byte, toChain int, eventType int) *MsgCoinSwap {
 	return &MsgCoinSwap{
 		TxHash:    txhash,
 		FromChain: fromChain,
@@ -39,6 +40,7 @@ func NewMsgCoinSwap(txhash []byte, fromChain int, fromAddr []byte, token int, va
 		Value:     value,
 		ToAddr:    toAddr,
 		ToChain:   toChain,
+		EventType: eventType,
 	}
 }
 
@@ -78,5 +80,6 @@ func (msg MsgCoinSwap) ToRecord() CoinSwapRecord {
 		Value:     msg.Value,
 		ToAddr:    msg.ToAddr,
 		ToChain:   msg.ToChain,
+		EventType: msg.EventType,
 	}
 }

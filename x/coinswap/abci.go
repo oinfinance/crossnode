@@ -23,20 +23,22 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	records := k.GetAllRecord(ctx)
 	dealed := make([]*types.CoinSwapRecordStorage, 0)
 	for _, record := range records {
-		if record.Status != types.RecordStatusWaited {
+		if record.Receipt.Status != types.RecordStatusWaited {
 			continue
 		}
-		if record.AddedBlock.Int64()-blockNumber < RefreshPoint {
+		if record.Record.AddedBlock.Int64()-blockNumber < RefreshPoint {
 			continue
 		}
 		// sign target chain tx with param.
+		// todo: make a signature for user to mint coin.
 		r := GenerateReceipt()
-		record.Receipt = hex.EncodeToString(r)
-		record.Status = types.RecordStatusSucceed
+		//
+		record.Receipt.Receipt = hex.EncodeToString(r)
+		record.Receipt.Status = types.RecordStatusSucceed
 		dealed = append(dealed, record)
 	}
 
 	for _, r := range dealed {
-		k.UpdateRecord(ctx, r.Hash(), r)
+		k.UpdateRecord(ctx, r.Record.Hash(), r)
 	}
 }

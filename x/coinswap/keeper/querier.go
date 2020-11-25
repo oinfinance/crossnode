@@ -35,7 +35,7 @@ func queryReceiptByHash(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byt
 		return nil, sdk.ErrInternal("have no record with given hash " + params.Hash)
 	}
 
-	bz, err := codec.MarshalJSONIndent(k.cdc, crs.CoinSwapReceipt)
+	bz, err := codec.MarshalJSONIndent(k.cdc, crs.Receipt)
 	if err != nil {
 		return nil, sdk.ErrInternal("marshal mapping info failed")
 	}
