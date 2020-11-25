@@ -116,7 +116,7 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 
 	// create
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
-		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, maptype.StoreKey)
+		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, maptype.MapinfoStoreKey, maptype.VerifyStoreKey)
 
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -153,7 +153,7 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		app.cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace, slashing.DefaultCodespace,
 	)
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
-	app.mappingKeeper = mapkeep.NewKeeper(app.cdc, keys[maptype.StoreKey])
+	app.mappingKeeper = mapkeep.NewKeeper(app.cdc, keys[maptype.MapinfoStoreKey], keys[maptype.VerifyStoreKey])
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(

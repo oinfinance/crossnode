@@ -9,25 +9,25 @@ var (
 	// type check
 	_ sdk.Msg = MsgRegister{}
 	_ sdk.Tx  = MsgRegister{}
+
+	_ sdk.Msg = MsgMapVerify{}
+	_ sdk.Tx  = MsgMapVerify{}
 )
 
 const (
-	TypeMsgRegister = "register"
+	TypeMsgRegister  = "register"
+	TypeMsgMapVerify = "verify"
 )
 
 type MsgRegister struct {
-	RemoteAccount []byte `json:"account"`   // source chain account
-	ChainId       uint   `json:"chainId"`   // chain identification
-	TokenType     uint   `json:"token"`     // token type identification
-	MyAddress     []byte `json:"myAddress"` // binding address with local address
+	ErcAddr []byte `json:"erc_addr"`   // 用户的ERC20地址
+	CCAddr  []byte `json:"cross_addr"` // cross chain address to binding
 }
 
-func NewMsgRegister(sourceAccount []byte, chainid uint, tokenType uint, myAddress []byte) *MsgRegister {
+func NewMsgRegister(ercAddr []byte, ccAddr []byte) *MsgRegister {
 	return &MsgRegister{
-		RemoteAccount: sourceAccount,
-		ChainId:       chainid,
-		TokenType:     tokenType,
-		MyAddress:     myAddress,
+		ErcAddr: ercAddr,
+		CCAddr:  ccAddr,
 	}
 }
 
@@ -44,13 +44,6 @@ func (msg MsgRegister) GetMsgs() []sdk.Msg {
 
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRegister) ValidateBasic() sdk.Error {
-	if msg.ChainId < 0 {
-		return sdk.NewError(DefaultCodespace, CodeInvalidInput, "invalid chainId")
-	}
-	if msg.TokenType < 0 {
-		return sdk.NewError(DefaultCodespace, CodeInvalidInput, "invalid tokenType")
-	}
-
 	return nil
 }
 
@@ -61,5 +54,43 @@ func (msg MsgRegister) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgRegister) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.MyAddress}
+	return []sdk.AccAddress{}
+}
+
+type MsgMapVerify struct {
+	ErcAddr []byte `json:"erc_addr"`   // 用户的ERC20地址
+	CCAddr  []byte `json:"cross_addr"` // cross chain address to binding
+}
+
+func NewMsgMapVerify(ercAddr []byte, ccAddr []byte) *MsgMapVerify {
+	return &MsgMapVerify{
+		ErcAddr: ercAddr,
+		CCAddr:  ccAddr,
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgMapVerify) Route() string { return RouterKey }
+
+// Type should return the action
+func (msg MsgMapVerify) Type() string { return TypeMsgMapVerify }
+
+// GetMsgs returns a single MsgSetAccName as an sdk.Msg.
+func (msg MsgMapVerify) GetMsgs() []sdk.Msg {
+	return []sdk.Msg{msg}
+}
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgMapVerify) ValidateBasic() sdk.Error {
+	return nil
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgMapVerify) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgMapVerify) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{}
 }

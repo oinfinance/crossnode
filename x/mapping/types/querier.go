@@ -1,16 +1,16 @@
 package types
 
 const (
-	QueryInfoByOin   = "queryInfoByOin" // QueryFeed
-	QueryInfoByLocal = "queryInfoByLocal"
+	QueryInfoByErc = "queryInfoByErc" // QueryFeed
+	QueryInfoByCC  = "queryInfoByCC"
 )
 
-// QueryInfoByOinParams defines the params to query map info by oin addr.
-type QueryInfoByOinParams struct {
-	OinAddr string
+// QueryInfoByErcParams defines the params to query map info by oin erc20 addr.
+type QueryInfoByErcParams struct {
+	ErcAddr string
 }
 
-// QueryInfoByLocalParams defines the params to query map info by crossnode addr.
-type QueryInfoByLocalParams struct {
-	LocalAddr string
+// QueryInfoByCCParams defines the params to query map info by crossnode addr.
+type QueryInfoByCCParams struct {
+	CCAddr string
 }
