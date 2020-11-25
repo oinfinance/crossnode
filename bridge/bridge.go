@@ -7,7 +7,6 @@ import (
 	"math/big"
 )
 
-
 /*
  * Bridge define the interface that could query account's assert and do a transfer.
  */
@@ -28,7 +27,7 @@ func NewBridge(chainid uint) Bridge {
 }
 
 func SupportedByName(chain string, token string) bool {
-	chainId,exChain := SupportChainId[chain]
+	chainId, exChain := SupportChainId[chain]
 	if !exChain {
 		return false
 	}
@@ -38,10 +37,15 @@ func SupportedByName(chain string, token string) bool {
 	}
 
 	tokenlist := SupportList[chainId]
-	for _,info := range tokenlist {
+	for _, info := range tokenlist {
 		if info.id == tid {
 			return true
 		}
 	}
 	return false
+}
+
+func SupportedGroup(fromChain, toChain, token string) bool {
+	// todo: implement
+	return true
 }

@@ -23,17 +23,17 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	txCmd.AddCommand(client.PostCommands(
-		GetCmdRegister(cdc),
+		MappingRegisterCmd(cdc),
 	)...)
 	return txCmd
 }
 
-func GetCmdRegister(cdc *codec.Codec) *cobra.Command {
+func MappingRegisterCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use: "register [token_address] [chainName] [tokenName] to [crossnode_address]",
-		Short:"register remote chain token to corssnode address",
-		Args: cobra.ExactArgs(4),
-		RunE: func (cmd *cobra.Command, args []string) error {
+		Use:   "register [token_address] [chainName] [tokenName] to [crossnode_address]",
+		Short: "register remote chain token to corssnode address",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
