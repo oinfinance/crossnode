@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/oinfinance/crossnode/x/coinswap/types"
+	"golang.org/x/crypto/sha3"
 
 	//"github.com/oinfinance/crossnode/bridge"
 	"github.com/oinfinance/crossnode/x/coinswap/keeper"
@@ -14,7 +15,9 @@ var (
 )
 
 func GenerateReceipt() []byte {
-	return []byte("target receipt")
+	data := []byte("target receipt")
+	hash := sha3.Sum256(data)
+	return hash[:]
 }
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
