@@ -121,7 +121,8 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 
 	// create
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
-		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, maptype.MapinfoStoreKey, maptype.VerifyStoreKey)
+		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey,
+		maptype.MapinfoStoreKey, maptype.VerifyStoreKey, coinswaptype.StoreKey)
 
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 

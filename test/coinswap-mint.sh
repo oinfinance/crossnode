@@ -39,8 +39,7 @@ unsignedTx="unsigned_coinswap_mint.json"
 signedTx="signed_coinswap_mint.json"
 
 
-curl -s  -X POST --data-binary "{\"base_req\":{\"from\":\"$from\",\"chain_id\":\"$CHAINID\",\"fees\":[{\"denom\":\"feecoin\",\"amount\":\"100\"}],\"generate_only\":true},\"txHash\":\"$test_txhash\",\"fromChain\":\"$test_fromchain\", \"fromAddr\":\"$test_fromaddr\",\"token\":\"$test_token\",\"value\":$test_value,\"toAddr\":\"$test_toaddr\",\"toChain\":\"$test_tochain\"}" ${rest_laddr}/coinswap/mint/ > $unsignedTx
-
+curl -s  -X POST --data-binary "{\"base_req\":{\"from\":\"$from\",\"chain_id\":\"$CHAINID\",\"fees\":[{\"denom\":\"feecoin\",\"amount\":\"100\"}],\"generate_only\":true},\"txHash\":\"$test_txhash\",\"fromChain\":\"$test_fromchain\", \"fromAddr\":\"$test_fromaddr\",\"token\":\"$test_token\",\"value\":\"$test_value\",\"toAddr\":\"$test_toaddr\",\"toChain\":\"$test_tochain\"}" ${rest_laddr}/coinswap/mint/ > $unsignedTx
 accountInfo=`$CLI query account $($CLI keys show $test_borker_key -a)`
 account_number=`echo $accountInfo | jq -r .value.account_number`
 sequence=`echo $accountInfo | jq -r .value.sequence`

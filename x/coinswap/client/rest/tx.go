@@ -3,7 +3,6 @@ package rest
 import (
 	"github.com/oinfinance/crossnode/bridge"
 	"github.com/oinfinance/crossnode/x/coinswap/types"
-	"math/big"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -46,7 +45,7 @@ func MintCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		tokenId := bridge.TokenIdByName(req.Token)
 
 		msgCoinMint := types.NewMsgCoinSwap(from, req.TxHash, int(fromChainId), req.FromAddr, int(tokenId),
-			big.NewInt(int64(req.Value)), req.ToAddr, int(toChainId), 1)
+			uint64(req.Value), req.ToAddr, int(toChainId), 1)
 
 		if e := msgCoinMint.ValidateBasic(); e != nil {
 			return
@@ -89,7 +88,7 @@ func BurnCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		tokenId := bridge.TokenIdByName(req.Token)
 
 		msgCoinBurn := types.NewMsgCoinSwap(from, req.TxHash, int(fromChainId), req.FromAddr, int(tokenId),
-			big.NewInt(int64(req.Value)), req.ToAddr, int(toChainId), 0)
+			uint64(req.Value), req.ToAddr, int(toChainId), 0)
 
 		if e := msgCoinBurn.ValidateBasic(); e != nil {
 			return

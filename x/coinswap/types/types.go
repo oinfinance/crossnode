@@ -13,15 +13,15 @@ const (
 )
 
 type CoinSwapRecord struct {
-	TxHash     string   `json:"txHash"`     // 抵押交易hash
-	FromChain  int      `json:"fromChain"`  // 原始链
-	FromAddr   string   `json:"fromAddr"`   // 抵押者地址
-	Token      int      `json:"token"`      // 代币类型
-	Value      *big.Int `json:"value"`      // 抵押数量
-	ToAddr     string   `json:"toAddr"`     // 接收铸币的地址
-	ToChain    int      `json:"toChain"`    // 目标链
-	EventType  int      `json:"eventType"`  // 事件类型(1: 铸币 0：销毁)
-	AddedBlock uint64   `json:"addedBlock"` // 记录产生的区块号
+	TxHash     string `json:"txHash"`     // 抵押交易hash
+	FromChain  int    `json:"fromChain"`  // 原始链
+	FromAddr   string `json:"fromAddr"`   // 抵押者地址
+	Token      int    `json:"token"`      // 代币类型
+	Value      uint64 `json:"value"`      // 抵押数量
+	ToAddr     string `json:"toAddr"`     // 接收铸币的地址
+	ToChain    int    `json:"toChain"`    // 目标链
+	EventType  int    `json:"eventType"`  // 事件类型(1: 铸币 0：销毁)
+	AddedBlock uint64 `json:"addedBlock"` // 记录产生的区块号
 }
 
 func (c CoinSwapRecord) Hash() []byte {
@@ -30,7 +30,7 @@ func (c CoinSwapRecord) Hash() []byte {
 	h.Write(big.NewInt(int64(c.FromChain)).Bytes())
 	h.Write([]byte(c.FromAddr))
 	h.Write(big.NewInt(int64(c.Token)).Bytes())
-	h.Write(c.Value.Bytes())
+	h.Write(big.NewInt(int64(c.Value)).Bytes())
 	h.Write([]byte(c.ToAddr))
 	h.Write(big.NewInt(int64(c.ToChain)).Bytes())
 	h.Write(big.NewInt(int64(c.AddedBlock)).Bytes())
