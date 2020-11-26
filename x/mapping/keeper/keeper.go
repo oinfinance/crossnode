@@ -64,11 +64,12 @@ func (k Keeper) UpdateMapping(ctx sdk.Context, info *types.MappingInfo) error {
 	return nil
 }
 
-func (k Keeper) GetMapInfo(ctx sdk.Context, ercAddr []byte) *types.MappingInfo {
+func (k Keeper) GetMapInfo(ctx sdk.Context, ercAddr string) *types.MappingInfo {
 	var info types.MappingInfo
+	key := []byte(ercAddr)
 	store := ctx.KVStore(k.mapStoreKey)
 
-	if data := store.Get(ercAddr); data == nil {
+	if data := store.Get(key); data == nil {
 		return nil
 	} else {
 		k.cdc.UnmarshalBinaryBare(data, &info)
@@ -93,36 +94,36 @@ func (k Keeper) GetAllMapInfo(ctx sdk.Context) []*types.MappingInfo {
 	return list
 }
 
-func (k Keeper) AddVerified(ctx sdk.Context, ccAddr []byte) error {
+func (k Keeper) AddVerified(ctx sdk.Context, ccAddr string) error {
 	store := ctx.KVStore(k.verifyStoreKey)
-	key := ccAddr
+	addr, _ := sdk.AccAddressFromBech32(ccAddr)
 	status := byte(types.MappingWaitVerify)
-	if store.Has(key) {
+	if store.Has(addr) {
 		return errors.New("the ccAddr on the store has been maped")
 	} else {
 		// save new map info to store.
-		store.Set(key, []byte{status})
+		store.Set(addr, []byte{status})
 	}
 	return nil
 }
 
-func (k Keeper) UpdateVerified(ctx sdk.Context, ccAddr []byte, status byte) error {
+func (k Keeper) UpdateVerified(ctx sdk.Context, ccAddr string, status byte) error {
 	store := ctx.KVStore(k.verifyStoreKey)
-	key := ccAddr
-	if store.Has(key) {
+	addr, _ := sdk.AccAddressFromBech32(ccAddr)
+	if store.Has(addr) {
 		// save new map info to store.
-		store.Set(key, []byte{status})
+		store.Set(addr, []byte{status})
 	} else {
 		return errors.New("not found map record")
 	}
 	return nil
 }
 
-func (k Keeper) GetVerified(ctx sdk.Context, ccAddr []byte) int {
+func (k Keeper) GetVerified(ctx sdk.Context, ccAddr string) int {
 	var status int
 	store := ctx.KVStore(k.verifyStoreKey)
-
-	if data := store.Get(ccAddr); data == nil {
+	addr, _ := sdk.AccAddressFromBech32(ccAddr)
+	if data := store.Get(addr); data == nil {
 		return 0
 	} else {
 		status = int(data[0])

@@ -1,7 +1,6 @@
 package mapping
 
 import (
-	"encoding/hex"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/oinfinance/crossnode/x/mapping/keeper"
@@ -32,10 +31,11 @@ func handleMsgRegister(ctx sdk.Context, k keeper.Keeper, msg *types.MsgRegister)
 		return sdk.NewError(types.DefaultCodespace, types.CodeInvalidInput, "validate basic failed").Result()
 	}
 	info := types.MappingInfo{}
-	info.ErcAddr = hex.EncodeToString(msg.ErcAddr)
-	info.CCAddr = string(msg.CCAddr)
+	info.ErcAddr = msg.ErcAddr
+	info.CCAddr = msg.CCAddr
 	info.Status = types.MappingWaitVerify
 	info.Balance = big.NewInt(0)
+	info.RegisterBlock = uint64(ctx.BlockHeader().Height)
 
 	err := k.AddMapping(ctx, &info)
 	if err != nil {

@@ -20,12 +20,14 @@ const (
 )
 
 type MsgRegister struct {
-	ErcAddr []byte `json:"erc_addr"`   // 用户的ERC20地址
-	CCAddr  []byte `json:"cross_addr"` // cross chain address to binding
+	Sender  string `json:"sender"`
+	ErcAddr string `json:"erc_addr"`   // 用户的ERC20地址
+	CCAddr  string `json:"cross_addr"` // cross chain address to binding
 }
 
-func NewMsgRegister(ercAddr []byte, ccAddr []byte) *MsgRegister {
+func NewMsgRegister(sender string, ercAddr string, ccAddr string) *MsgRegister {
 	return &MsgRegister{
+		Sender:  sender,
 		ErcAddr: ercAddr,
 		CCAddr:  ccAddr,
 	}
@@ -54,15 +56,16 @@ func (msg MsgRegister) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgRegister) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{}
+	addr, _ := sdk.AccAddressFromBech32(msg.Sender)
+	return []sdk.AccAddress{addr}
 }
 
 type MsgMapVerify struct {
-	ErcAddr []byte `json:"erc_addr"`   // 用户的ERC20地址
-	CCAddr  []byte `json:"cross_addr"` // cross chain address to binding
+	ErcAddr string `json:"erc_addr"`   // 用户的ERC20地址
+	CCAddr  string `json:"cross_addr"` // cross chain address to binding
 }
 
-func NewMsgMapVerify(ercAddr []byte, ccAddr []byte) *MsgMapVerify {
+func NewMsgMapVerify(ercAddr string, ccAddr string) *MsgMapVerify {
 	return &MsgMapVerify{
 		ErcAddr: ercAddr,
 		CCAddr:  ccAddr,
@@ -82,6 +85,9 @@ func (msg MsgMapVerify) GetMsgs() []sdk.Msg {
 
 // ValidateBasic runs stateless checks on the message
 func (msg MsgMapVerify) ValidateBasic() sdk.Error {
+	if msg.CCAddr == "" || msg.ErcAddr == "" {
+		return sdk.NewError(DefaultCodespace, CodeInvalidAddress, "invalid ccaddr or ercaddr")
+	}
 	return nil
 }
 
@@ -92,5 +98,6 @@ func (msg MsgMapVerify) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgMapVerify) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{}
+	addr, _ := sdk.AccAddressFromBech32(msg.CCAddr)
+	return []sdk.AccAddress{addr}
 }

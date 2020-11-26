@@ -5,7 +5,7 @@ const (
 	ModuleName = "mapping"
 
 	// StoreKey is the default store key for guardian
-	MapinfoStoreKey = ModuleName + "mapinfo"
+	MapinfoStoreKey = ModuleName
 	VerifyStoreKey  = ModuleName + "verify"
 
 	// RouterKey is the message route for guardian

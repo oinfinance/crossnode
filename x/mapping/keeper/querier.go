@@ -29,11 +29,11 @@ func queryInfoByErc(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, s
 		return nil, sdk.ErrInternal("unmarshal failed")
 	}
 
-	ercAddr, err := hex.DecodeString(params.ErcAddr)
+	_, err := hex.DecodeString(params.ErcAddr)
 	if err != nil {
 		return nil, sdk.ErrInternal("invalid addr param")
 	}
-	pinfo := k.GetMapInfo(ctx, ercAddr)
+	pinfo := k.GetMapInfo(ctx, params.ErcAddr)
 
 	response := BuildResponse(pinfo)
 	bz, err := codec.MarshalJSONIndent(k.cdc, response)

@@ -21,6 +21,7 @@ type RegisterReq struct {
 func RegisterRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req RegisterReq
+		var err error
 		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
 			return
 		}
@@ -29,12 +30,19 @@ func RegisterRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if !req.BaseReq.ValidateBasic(w) {
 			return
 		}
-
-		ercAddr, err := hex.DecodeString(req.ErcAddr)
-		if err != nil {
+		if _, err = sdk.AccAddressFromBech32(req.BaseReq.From); err != nil {
 			return
 		}
-		msg := types.NewMsgRegister(ercAddr, []byte(req.CCAddr))
+
+		if _, err = hex.DecodeString(req.ErcAddr); err != nil {
+			return
+		}
+		if _, err = sdk.AccAddressFromBech32(req.CCAddr); err != nil {
+			return
+		}
+
+		msg := types.NewMsgRegister(req.BaseReq.From, req.ErcAddr, req.CCAddr)
+
 		if e := msg.ValidateBasic(); e != nil {
 			return
 		}
@@ -61,11 +69,13 @@ func VerifyRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ercAddr, err := hex.DecodeString(req.ErcAddr)
-		if err != nil {
+		if _, err := hex.DecodeString(req.ErcAddr); err != nil {
 			return
 		}
-		msg := types.NewMsgMapVerify(ercAddr, []byte(req.CCAddr))
+		if _, err := sdk.AccAddressFromBech32(req.CCAddr); err != nil {
+			return
+		}
+		msg := types.NewMsgMapVerify(req.ErcAddr, req.CCAddr)
 		if e := msg.ValidateBasic(); e != nil {
 			return
 		}

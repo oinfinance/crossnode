@@ -37,12 +37,15 @@ func MappingVerifyTxCmd(cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContextWithFrom(args[0]).WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			var msg *types.MsgMapVerify
-			if ercAddr, e := hex.DecodeString(args[1]); e != nil {
-				return errors.New("invalid erc20 address")
-			} else {
-				msg = types.NewMsgMapVerify(ercAddr, []byte(args[0]))
+			ccAddr := args[0]
+			ercAddr := args[1]
+			if _, e := sdk.AccAddressFromBech32(ccAddr); e != nil {
+				return errors.New("invalid cross chain address")
 			}
+			if _, e := hex.DecodeString(ercAddr); e != nil {
+				return errors.New("invalid erc20 address")
+			}
+			var msg = types.NewMsgMapVerify(ercAddr, ccAddr)
 
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},

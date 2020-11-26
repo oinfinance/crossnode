@@ -90,7 +90,7 @@ func (am AppModule) Name() string {
 func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // module message route name
-func (am AppModule) Route() string { return "" }
+func (am AppModule) Route() string { return types.RouterKey }
 
 // module handler
 func (am AppModule) NewHandler() sdk.Handler {
@@ -111,7 +111,6 @@ func (am AppModule) NewQuerierHandler() sdk.Querier {
 func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState GenesisState
 	types.ModuleCdc.MustUnmarshalJSON(data, &genesisState)
-	// Todo: call InitGenesis
 	return []abci.ValidatorUpdate{}
 }
 
@@ -122,12 +121,12 @@ func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 }
 
 // module begin-block
-func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
+func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
 	BeginBlocker(ctx, am.MapKeeper)
 }
 
 // module end-block
-func (AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-
+func (AppModule) EndBlock(ctx sdk.Context, req abci.RequestEndBlock) []abci.ValidatorUpdate {
+	ctx = ctx.WithBlockHeight(req.Height)
 	return []abci.ValidatorUpdate{}
 }
