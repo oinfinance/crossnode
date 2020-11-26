@@ -20,33 +20,31 @@ func GetQueryCmd(route string, cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd.AddCommand(client.GetCommands(
-		GetCmdQueryMapinfo(route, cdc))...)
-
+		GetCmdQueryMapinfoByErc(route, cdc))...)
 	return cmd
 }
 
-func GetCmdQueryMapinfo(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryMapinfoByErc(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use: "mapping [cross_address]",
-		Short: "Get corss address's map info",
-		Args:cobra.ExactArgs(1),
-		RunE:func(cmd *cobra.Command, args []string) error {
-			clictx:= context.NewCLIContext().WithCodec(cdc)
-			bz, err := cdc.MarshalJSON(types.QueryInfoByLocalParams{LocalAddr: args[0]})
+		Use:   "mapping [erc_address]",
+		Short: "Get map info by erc20 address",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clictx := context.NewCLIContext().WithCodec(cdc)
+			bz, err := cdc.MarshalJSON(types.QueryInfoByErcParams{ErcAddr: args[0]})
 			if err != nil {
 				return err
 			}
-			route := fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryInfoByLocalParams{})
+			route := fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryInfoByErc)
 			res, _, err := clictx.QueryWithData(route, bz)
 			if err != nil {
 				return fmt.Errorf("could not resolve: %s", err)
 			}
 			var resp types.QueryInfoResponse
-			if err =cdc.UnmarshalJSON(res, &resp); err != nil {
+			if err = cdc.UnmarshalJSON(res, &resp); err != nil {
 				return err
 			}
 			return clictx.PrintOutput(resp)
 		},
 	}
 }
-

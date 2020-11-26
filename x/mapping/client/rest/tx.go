@@ -1,9 +1,8 @@
 package rest
 
 import (
-	"github.com/oinfinance/crossnode/bridge"
-	"github.com/oinfinance/crossnode/x/coinswap/types"
-	"math/big"
+	"encoding/hex"
+	"github.com/oinfinance/crossnode/x/mapping/types"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -12,21 +11,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 )
 
-type MintCoinReq struct {
-	BaseReq   rest.BaseReq `json:"base_req"`
-	TxHash    string       `json:"txHash"`    // 抵押交易hash
-	FromChain string       `json:"fromChain"` // 原始链
-	FromAddr  string       `json:"fromAddr"`  // 抵押者地址
-	Token     string       `json:"token"`     // 代币类型
-	Value     int          `json:"value"`     // 抵押数量
-	ToAddr    string       `json:"toAddr"`    // 接收铸币的地址
-	ToChain   string       `json:"toChain"`   // 目标链
+type RegisterReq struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	ErcAddr string       `json:"erc_addr"` // erc20 address
+	CCAddr  string       `json:"cc_addr"`  // cross chain address
 }
 
 // SendRequestHandlerFn - http request handler to send coins to a address.
-func MintCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func RegisterRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req MintCoinReq
+		var req RegisterReq
 		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
 			return
 		}
@@ -36,38 +30,28 @@ func MintCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		if !bridge.SupportedGroup(req.FromChain, req.ToChain, req.Token) {
+		ercAddr, err := hex.DecodeString(req.ErcAddr)
+		if err != nil {
 			return
 		}
-		fromChainId := bridge.ChainIdByName(req.FromChain)
-		toChainId := bridge.ChainIdByName(req.ToChain)
-		tokenId := bridge.TokenIdByName(req.Token)
-
-		msgCoinMint := types.NewMsgCoinSwap([]byte(req.TxHash), int(fromChainId), []byte(req.FromAddr), int(tokenId),
-			big.NewInt(int64(req.Value)), []byte(req.ToAddr), int(toChainId), 1)
-
-		if e := msgCoinMint.ValidateBasic(); e != nil {
+		msg := types.NewMsgRegister(ercAddr, []byte(req.CCAddr))
+		if e := msg.ValidateBasic(); e != nil {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msgCoinMint})
+		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
 
-type BurnCoinReq struct {
-	BaseReq   rest.BaseReq `json:"base_req"`
-	TxHash    string       `json:"txHash"`    // 抵押交易hash
-	FromChain string       `json:"fromChain"` // 原始链
-	FromAddr  string       `json:"fromAddr"`  // 抵押者地址
-	Token     string       `json:"token"`     // 代币类型
-	Value     int          `json:"value"`     // 抵押数量
-	ToAddr    string       `json:"toAddr"`    // 接收铸币的地址
-	ToChain   string       `json:"toChain"`   // 目标链
+type VerifyReq struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	ErcAddr string       `json:"erc_addr"` // erc20 address
+	CCAddr  string       `json:"cc_addr"`  // cross chain address
 }
 
-func BurnCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func VerifyRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req MintCoinReq
+		var req VerifyReq
 		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
 			return
 		}
@@ -77,20 +61,15 @@ func BurnCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		if !bridge.SupportedGroup(req.FromChain, req.ToChain, req.Token) {
+		ercAddr, err := hex.DecodeString(req.ErcAddr)
+		if err != nil {
 			return
 		}
-		fromChainId := bridge.ChainIdByName(req.FromChain)
-		toChainId := bridge.ChainIdByName(req.ToChain)
-		tokenId := bridge.TokenIdByName(req.Token)
-
-		msgCoinBurn := types.NewMsgCoinSwap([]byte(req.TxHash), int(fromChainId), []byte(req.FromAddr), int(tokenId),
-			big.NewInt(int64(req.Value)), []byte(req.ToAddr), int(toChainId), 0)
-
-		if e := msgCoinBurn.ValidateBasic(); e != nil {
+		msg := types.NewMsgMapVerify(ercAddr, []byte(req.CCAddr))
+		if e := msg.ValidateBasic(); e != nil {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msgCoinBurn})
+		utils.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }

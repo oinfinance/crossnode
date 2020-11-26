@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/hex"
 	"errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -8,7 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	"github.com/oinfinance/crossnode/bridge"
 	"github.com/oinfinance/crossnode/x/mapping/types"
 	"github.com/spf13/cobra"
 )
@@ -23,37 +23,26 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	txCmd.AddCommand(client.PostCommands(
-		MappingRegisterCmd(cdc),
+		MappingVerifyTxCmd(cdc),
 	)...)
 	return txCmd
 }
 
-func MappingRegisterCmd(cdc *codec.Codec) *cobra.Command {
+func MappingVerifyTxCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "register [token_address] [chainName] [tokenName] to [crossnode_address]",
-		Short: "register remote chain token to corssnode address",
-		Args:  cobra.ExactArgs(4),
+		Use:   "verify [crossnode_address] [erc_address] ",
+		Short: "verify crossnode bind with erc20 address",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := context.NewCLIContextWithFrom(args[0]).WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			oinAddress, err := sdk.AccAddressFromHex(args[0])
-			if err != nil {
-				return err
+			var msg *types.MsgMapVerify
+			if ercAddr, e := hex.DecodeString(args[1]); e != nil {
+				return errors.New("invalid erc20 address")
+			} else {
+				msg = types.NewMsgMapVerify(ercAddr, []byte(args[0]))
 			}
-			chainName := args[1]
-			tokenName := args[2]
-			if !bridge.SupportedByName(chainName, tokenName) {
-				return errors.New("unsupported chain token pair")
-			}
-
-			crossAddress, err := sdk.AccAddressFromHex(args[3])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgRegister(oinAddress.Bytes(), uint(bridge.ChainIdByName(chainName)), uint(bridge.TokenIdByName(tokenName)),
-				crossAddress.Bytes())
 
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},

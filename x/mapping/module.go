@@ -53,7 +53,7 @@ func (ab AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
 
 // register rest routes
 func (ab AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr, types.StoreKey)
+	rest.RegisterRoutes(ctx, rtr, types.MapinfoStoreKey)
 }
 
 // get the root tx command of this module
@@ -63,7 +63,7 @@ func (ab AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 
 // get the root query command of this module
 func (ab AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
-	return cli.GetQueryCmd(types.StoreKey, cdc)
+	return cli.GetQueryCmd(types.MapinfoStoreKey, cdc)
 }
 
 //___________________________

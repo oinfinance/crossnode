@@ -121,7 +121,7 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 		authcmd.GetBroadcastCommand(cdc),
 		authcmd.GetEncodeCommand(cdc),
 		client.LineBreak,
-		mappingcmd.MappingRegisterCmd(cdc),
+		mappingcmd.MappingVerifyTxCmd(cdc),
 		coinswapcmd.CoinMintCmd(cdc),
 		coinswapcmd.CoinBurnCmd(cdc),
 	)
