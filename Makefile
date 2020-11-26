@@ -42,15 +42,15 @@ build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
 install: go.sum
-		go install  $(BUILD_FLAGS) ./cmd/oind
-		go install  $(BUILD_FLAGS) ./cmd/oincli
+	go install  $(BUILD_FLAGS) ./cmd/oind
+	go install  $(BUILD_FLAGS) ./cmd/oincli
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
 	@go mod download
 
 go.sum: go.mod
-		@echo "--> Ensure dependencies have not been modified"
-		@go mod verify
+	@echo "--> Ensure dependencies have not been modified"
+	@go mod verify
 
 clean:
 	@rm -rf build/
