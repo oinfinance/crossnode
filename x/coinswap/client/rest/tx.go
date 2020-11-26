@@ -36,6 +36,8 @@ func MintCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
+		from := req.BaseReq.From
+
 		if !bridge.SupportedGroup(req.FromChain, req.ToChain, req.Token) {
 			return
 		}
@@ -43,8 +45,8 @@ func MintCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		toChainId := bridge.ChainIdByName(req.ToChain)
 		tokenId := bridge.TokenIdByName(req.Token)
 
-		msgCoinMint := types.NewMsgCoinSwap([]byte(req.TxHash), int(fromChainId), []byte(req.FromAddr), int(tokenId),
-			big.NewInt(int64(req.Value)), []byte(req.ToAddr), int(toChainId), 1)
+		msgCoinMint := types.NewMsgCoinSwap(from, req.TxHash, int(fromChainId), req.FromAddr, int(tokenId),
+			big.NewInt(int64(req.Value)), req.ToAddr, int(toChainId), 1)
 
 		if e := msgCoinMint.ValidateBasic(); e != nil {
 			return
@@ -77,6 +79,8 @@ func BurnCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
+		from := req.BaseReq.From
+
 		if !bridge.SupportedGroup(req.FromChain, req.ToChain, req.Token) {
 			return
 		}
@@ -84,8 +88,8 @@ func BurnCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		toChainId := bridge.ChainIdByName(req.ToChain)
 		tokenId := bridge.TokenIdByName(req.Token)
 
-		msgCoinBurn := types.NewMsgCoinSwap([]byte(req.TxHash), int(fromChainId), []byte(req.FromAddr), int(tokenId),
-			big.NewInt(int64(req.Value)), []byte(req.ToAddr), int(toChainId), 0)
+		msgCoinBurn := types.NewMsgCoinSwap(from, req.TxHash, int(fromChainId), req.FromAddr, int(tokenId),
+			big.NewInt(int64(req.Value)), req.ToAddr, int(toChainId), 0)
 
 		if e := msgCoinBurn.ValidateBasic(); e != nil {
 			return

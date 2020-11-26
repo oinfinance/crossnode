@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/oinfinance/crossnode/address"
-	coinswapcmd "github.com/oinfinance/crossnode/x/coinswap/client/cli"
 	mappingcmd "github.com/oinfinance/crossnode/x/mapping/client/cli"
 	"os"
 	"path"
@@ -122,8 +121,6 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 		authcmd.GetEncodeCommand(cdc),
 		client.LineBreak,
 		mappingcmd.MappingVerifyTxCmd(cdc),
-		coinswapcmd.CoinMintCmd(cdc),
-		coinswapcmd.CoinBurnCmd(cdc),
 	)
 
 	// add modules' tx commands

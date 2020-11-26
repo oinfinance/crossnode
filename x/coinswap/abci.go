@@ -23,13 +23,17 @@ func GenerateReceipt() []byte {
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	blockNumber := ctx.BlockHeight()
 
+	if blockNumber <= 1 {
+		return
+	}
+
 	records := k.GetAllRecord(ctx)
 	dealed := make([]*types.CoinSwapRecordStorage, 0)
 	for _, record := range records {
 		if record.Receipt.Status != types.RecordStatusWaited {
 			continue
 		}
-		if record.Record.AddedBlock.Int64()-blockNumber < RefreshPoint {
+		if int64(record.Record.AddedBlock)-blockNumber < RefreshPoint {
 			continue
 		}
 		// sign target chain tx with param.

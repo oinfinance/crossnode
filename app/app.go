@@ -18,6 +18,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+	"github.com/oinfinance/crossnode/x/coinswap"
+	coinswapkeep "github.com/oinfinance/crossnode/x/coinswap/keeper"
+	coinswaptype "github.com/oinfinance/crossnode/x/coinswap/types"
 	"github.com/oinfinance/crossnode/x/mapping"
 	mapkeep "github.com/oinfinance/crossnode/x/mapping/keeper"
 	maptype "github.com/oinfinance/crossnode/x/mapping/types"
@@ -52,6 +55,7 @@ var (
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
 		mapping.AppModuleBasic{},
+		coinswap.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -97,6 +101,7 @@ type OinApp struct {
 	mintKeeper     mint.Keeper
 	crisisKeeper   crisis.Keeper
 	mappingKeeper  mapkeep.Keeper
+	coinswapKeeper coinswapkeep.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -154,6 +159,7 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	)
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
 	app.mappingKeeper = mapkeep.NewKeeper(app.cdc, keys[maptype.MapinfoStoreKey], keys[maptype.VerifyStoreKey])
+	app.coinswapKeeper = coinswapkeep.NewKeeper(app.cdc, keys[coinswaptype.StoreKey])
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(
@@ -174,14 +180,15 @@ func NewOinApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper),
 		mapping.NewAppModule(app.mappingKeeper),
+		coinswap.NewAppModule(app.coinswapKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
-	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName, maptype.ModuleName)
+	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName, maptype.ModuleName, coinswaptype.ModuleName)
 
-	app.mm.SetOrderEndBlockers(crisis.ModuleName, staking.ModuleName)
+	app.mm.SetOrderEndBlockers(crisis.ModuleName, staking.ModuleName, coinswaptype.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.

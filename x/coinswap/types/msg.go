@@ -20,19 +20,21 @@ const (
 
 // coinswap msg got from borker node.
 type MsgCoinSwap struct {
-	TxHash    []byte   `json:"txHash"`    // 抵押交易hash
+	Sender    string   `json:"sender"`    // 交易发送者
+	TxHash    string   `json:"txHash"`    // 抵押交易hash
 	FromChain int      `json:"fromChain"` // 原始链
-	FromAddr  []byte   `json:"fromAddr"`  // 抵押者地址
+	FromAddr  string   `json:"fromAddr"`  // 抵押者地址
 	Token     int      `json:"token"`     // 代币类型
 	Value     *big.Int `json:"value"`     // 抵押数量
-	ToAddr    []byte   `json:"toAddr"`    // 接收铸币的地址
+	ToAddr    string   `json:"toAddr"`    // 接收铸币的地址
 	ToChain   int      `json:"toChain"`   // 目标链
 	EventType int      `json:"eventType"` // 事件类型(1: 铸币 0：销毁)
 }
 
-func NewMsgCoinSwap(txhash []byte, fromChain int, fromAddr []byte, token int, value *big.Int,
-	toAddr []byte, toChain int, eventType int) *MsgCoinSwap {
+func NewMsgCoinSwap(sender string, txhash string, fromChain int, fromAddr string, token int, value *big.Int,
+	toAddr string, toChain int, eventType int) *MsgCoinSwap {
 	return &MsgCoinSwap{
+		Sender:    sender,
 		TxHash:    txhash,
 		FromChain: fromChain,
 		FromAddr:  fromAddr,
@@ -68,7 +70,8 @@ func (msg MsgCoinSwap) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgCoinSwap) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{}
+	addr, _ := sdk.AccAddressFromBech32(msg.Sender)
+	return []sdk.AccAddress{addr}
 }
 
 func (msg MsgCoinSwap) ToRecord() CoinSwapRecord {
