@@ -33,7 +33,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		if record.Receipt.Status != types.RecordStatusWaited {
 			continue
 		}
-		if int64(record.Record.AddedBlock)-blockNumber < RefreshPoint {
+		if (blockNumber - int64(record.Record.AddedBlock)) < RefreshPoint {
 			continue
 		}
 		// sign target chain tx with param.
