@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"github.com/oinfinance/crossnode/bridge"
+	"github.com/oinfinance/crossnode/chain"
 	"github.com/oinfinance/crossnode/x/coinswap/types"
 	"net/http"
 
@@ -37,12 +37,12 @@ func MintCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		from := req.BaseReq.From
 
-		if !bridge.SupportedGroup(req.FromChain, req.ToChain, req.Token) {
+		if !chain.SupportedGroup(req.FromChain, req.ToChain, req.Token) {
 			return
 		}
-		fromChainId := bridge.ChainIdByName(req.FromChain)
-		toChainId := bridge.ChainIdByName(req.ToChain)
-		tokenId := bridge.TokenIdByName(req.Token)
+		fromChainId := chain.ChainIdByName(req.FromChain)
+		toChainId := chain.ChainIdByName(req.ToChain)
+		tokenId := chain.TokenIdByName(req.Token)
 
 		msgCoinMint := types.NewMsgCoinSwap(from, req.TxHash, int(fromChainId), req.FromAddr, int(tokenId),
 			uint64(req.Value), req.ToAddr, int(toChainId), 1)
@@ -80,12 +80,12 @@ func BurnCoinRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		from := req.BaseReq.From
 
-		if !bridge.SupportedGroup(req.FromChain, req.ToChain, req.Token) {
+		if !chain.SupportedGroup(req.FromChain, req.ToChain, req.Token) {
 			return
 		}
-		fromChainId := bridge.ChainIdByName(req.FromChain)
-		toChainId := bridge.ChainIdByName(req.ToChain)
-		tokenId := bridge.TokenIdByName(req.Token)
+		fromChainId := chain.ChainIdByName(req.FromChain)
+		toChainId := chain.ChainIdByName(req.ToChain)
+		tokenId := chain.TokenIdByName(req.Token)
 
 		msgCoinBurn := types.NewMsgCoinSwap(from, req.TxHash, int(fromChainId), req.FromAddr, int(tokenId),
 			uint64(req.Value), req.ToAddr, int(toChainId), 0)

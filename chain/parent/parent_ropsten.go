@@ -1,42 +1,56 @@
 package parent
 
-import "github.com/oinfinance/crossnode/chain"
+import (
+	"github.com/oinfinance/crossnode/bridge"
+	"github.com/oinfinance/crossnode/chain/types"
+	"math/big"
+)
 
 type ParentRopsten struct {
 	contractAddr string
 	rpclist      []string
-	chainId      uint
+	chainId      types.ChainId
+	ethClient    *bridge.EthCluster
 }
 
 var (
 	ethRopsten = ParentRopsten{}
 )
 
-func init() {
+func newEthRopsten_OIN() ParentRopsten {
 	// https://ropsten.etherscan.io/token/0x919b1acde3564bcad39efd3fb2955dd98c178e16
-	ethRopsten.chainId = 3
+	ethRopsten := ParentRopsten{}
+	ethRopsten.chainId = types.ChainRopsten
 	ethRopsten.contractAddr = "0x919b1acde3564bcad39efd3fb2955dd98c178e16"
 	ethRopsten.rpclist = []string{
 		"http://127.0.0.1:8545",
 	}
-}
-func GetParentRopsten() chain.ParentChain {
+	ethRopsten.ethClient = bridge.NewClientCluster(ethRopsten.rpclist)
 	return ethRopsten
 }
 
-func (m ParentRopsten) ValidRPC() string {
-	for _, link := range m.rpclist {
-		if connected(link) {
-			return link
-		}
+func GetParentRopsten(token types.TokenId) types.ParentChain {
+	switch token {
+	case types.TokenErc20Oin:
+		return newEthRopsten_OIN()
+	default:
+		panic("unsupported token")
 	}
-	return ""
+	return nil
 }
 
-func (m ParentRopsten) ChainId() uint {
+func (m ParentRopsten) ChainId() types.ChainId {
 	return m.chainId
 }
 
 func (m ParentRopsten) ContractAddr() string {
 	return m.contractAddr
+}
+
+func (m ParentRopsten) GetBalance(addr string, blockNumber int64) *big.Int {
+	if balance, err := m.ethClient.GetBalance(m.contractAddr, addr, blockNumber); err != nil {
+		return balance
+	} else {
+		return balance
+	}
 }

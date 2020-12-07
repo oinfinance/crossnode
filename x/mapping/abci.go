@@ -1,9 +1,8 @@
 package mapping
 
 import (
-	"encoding/hex"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/oinfinance/crossnode/bridge"
+	"github.com/oinfinance/crossnode/chain"
 	"github.com/oinfinance/crossnode/x/mapping/keeper"
 	"github.com/oinfinance/crossnode/x/mapping/types"
 )
@@ -21,9 +20,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	maplist := k.GetAllMapInfo(ctx)
 	for _, info := range maplist {
 		if info.Status == types.MappingVerifyPassed {
-			gate := bridge.NewBridge(0)
-			addr, _ := hex.DecodeString(info.ErcAddr)
-			newBalance := gate.GetBalance(addr)
+			parent := chain.GetParentChain()
+			newBalance := parent.GetBalance(info.ErcAddr, -1)
+
 			if newBalance.Cmp(info.Balance) != 0 {
 				info.Balance = newBalance
 				k.UpdateMapping(ctx, info)
